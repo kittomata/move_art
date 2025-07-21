@@ -1,0 +1,111 @@
+/* Base styles for the entire site */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0d0d23;
+  color: #f5f5f5;
+}
+
+header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: transparent;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.7rem;
+  letter-spacing: 0.1rem;
+}
+
+header p {
+  margin-top: 0.5rem;
+  color: #aaa;
+  font-size: 1.1rem;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+
+.gallery-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gallery-item span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.4rem 0.8rem;
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 1rem;
+  color: #fff;
+  text-align: left;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  color: #666;
+  border-top: 1px solid #222;
+  background: #0d0d23;
+  font-size: 0.9rem;
+}
+
+/* Art page button styles */
+#back-link,
+#fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  padding: 0.5em 1em;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+  z-index: 10;
+}
+
+#back-link:hover,
+#fullscreen-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#back-link {
+  left: 10px;
+}
+
+#fullscreen-btn {
+  right: 10px;
+}
+
+/* When viewing an art page we want to avoid scrollbars on the canvas. Applying
+   the .art-page class to the body element lets us scope overflow rules to art
+   pages only, so the index page can still scroll normally. */
+body.art-page {
+  overflow: hidden;
+}

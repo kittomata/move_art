@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Art Gallery</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Dynamic Art Gallery</h1>
+    <p>インタラクティブなグラフィックアートをお楽しみください。</p>
+  </header>
+  <main>
+    <div class="gallery">
+      <a class="gallery-item" href="arts/art1.html">
+        <img src="thumbs/art1.png" alt="Art 1">
+        <span>Art 1</span>
+      </a>
+      <a class="gallery-item" href="arts/art2.html">
+        <img src="thumbs/art2.png" alt="Art 2">
+        <span>Art 2</span>
+      </a>
+      <a class="gallery-item" href="arts/art3.html">
+        <img src="thumbs/art3.png" alt="Art 3">
+        <span>Art 3</span>
+      </a>
+      <a class="gallery-item" href="arts/art4.html">
+        <img src="thumbs/art4.png" alt="Art 4">
+        <span>Art 4</span>
+      </a>
+      <a class="gallery-item" href="arts/art5.html">
+        <img src="thumbs/art5.png" alt="Art 5">
+        <span>Art 5</span>
+      </a>
+      <a class="gallery-item" href="arts/art6.html">
+        <img src="thumbs/art6.png" alt="Art 6">
+        <span>Art 6</span>
+      </a>
+      <a class="gallery-item" href="arts/art7.html">
+        <img src="thumbs/art7.png" alt="Art 7">
+        <span>Art 7</span>
+      </a>
+      <a class="gallery-item" href="arts/art8.html">
+        <img src="thumbs/art8.png" alt="Art 8">
+        <span>Art 8</span>
+      </a>
+      <a class="gallery-item" href="arts/art9.html">
+        <img src="thumbs/art9.png" alt="Art 9">
+        <span>Art 9</span>
+      </a>
+      <a class="gallery-item" href="arts/art10.html">
+        <img src="thumbs/art10.png" alt="Art 10">
+        <span>Art 10</span>
+      </a>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2025 Dynamic Art Gallery</p>
+  </footer>
+
+  <!-- Dynamically load previews from each art page. For each gallery item
+       we create an off-screen iframe that loads the corresponding art
+       page. Each art page posts its preview image back to the parent via
+       postMessage once the first frame has been drawn. When the message
+       arrives we update the thumbnail and remove the iframe. As a
+       fallback, we also attempt to read previewImage from the iframe
+       directly after it loads, in case postMessage fails due to
+       environment restrictions. -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.gallery-item img');
+      // Map from art page pathname to its corresponding thumbnail image
+      const imgMap = {};
+      items.forEach(img => {
+        const linkHref = img.parentElement.getAttribute('href');
+        if (linkHref) {
+          // compute a full URL so we can match against the path reported by
+          // the art page when it posts its preview
+          const fullURL = new URL(linkHref, window.location.href);
+          imgMap[fullURL.pathname] = img;
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = linkHref;
+          iframe.onload = () => {
+            // fallback: attempt to read previewImage directly after a delay
+            setTimeout(() => {
+              try {
+                const preview = iframe.contentWindow.previewImage;
+                if (preview) {
+                  img.src = preview;
+                  iframe.remove();
+                }
+              } catch (e) {
+                // ignore cross-origin restrictions
+              }
+            }, 500);
+          };
+          document.body.appendChild(iframe);
+        }
+      });
+
+      // Listen for messages from art pages. Each art page posts a
+      // message containing the preview image when it finishes drawing
+      // its first frame. We update the appropriate thumbnail and remove
+      // the corresponding iframe.
+      window.addEventListener('message', event => {
+        const data = event.data;
+        if (data && data.type === 'preview' && data.url && imgMap[data.url]) {
+          const img = imgMap[data.url];
+          img.src = data.data;
+          // remove any iframe whose src resolves to the same pathname as
+          // the posted preview
+          const frames = document.querySelectorAll('iframe');
+          frames.forEach(f => {
+            try {
+              const frameURL = new URL(f.src, window.location.href);
+              if (frameURL.pathname === data.url) {
+                f.remove();
+              }
+            } catch (e) {
+              // ignore invalid URLs
+            }
+          });
+        }
+      }, false);
+    });
+  </script>
+</body>
+</html>
